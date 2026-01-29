@@ -64,8 +64,6 @@ def main():
 
 
 if __name__ == "__main__":
-    # Demo Mode: Show both vulnerable and good code
-    print("🎯 PRGuard Demo - Testing AI Security Analysis\n")
+    print("🎯 PRGuard: AI-powered security analysis in progress.\n")
     print("\n" + "="*60 + "\n")
-    # Uncomment to use with real git repo
     main()
