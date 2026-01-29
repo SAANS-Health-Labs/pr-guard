@@ -55,6 +55,7 @@ def main():
     print("\nRISKS:\n", result.get("risks"))
     print("\nMISSING TESTS:\n", result.get("missing_tests"))
     print("\nMERGE SCORE:", result["score"])
+    # 
 
     if result["score"] < args.threshold:
         print("\n❌ PR Guard failed quality gate")
