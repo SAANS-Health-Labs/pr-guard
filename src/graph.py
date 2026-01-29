@@ -22,6 +22,7 @@ def create_prguard_workflow():
     workflow.add_node("commits", evaluate_commits)
     workflow.add_node("suggestions", generate_suggestions) 
     workflow.add_node("score", calculate_score)
+    
 
     
     # Define the flow
