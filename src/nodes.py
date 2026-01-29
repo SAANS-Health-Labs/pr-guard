@@ -417,9 +417,22 @@
 
 
 
-from langchain_openai import ChatOpenAI
+from dotenv import load_dotenv
+import os
 
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+load_dotenv()
+
+from state import PRState  # ← Changed from PRReviewState to PRState
+from langchain_groq import ChatGroq
+from langchain_core.prompts import ChatPromptTemplate
+import json
+
+# Initialize LLM - Using FREE Groq!
+llm = ChatGroq(
+    model="llama-3.3-70b-versatile",
+    temperature=0
+)
+
 
 def summarize_node(state):
     prompt = f"""
@@ -439,16 +452,26 @@ COMMITS:
 
 def risk_node(state):
     prompt = f"""
-Analyze the PR diff and list risks.
-Return a JSON array of strings.
+Analyze the PR diff and list potential risks or breaking changes.
+Return ONLY a valid JSON array of strings, nothing else.
+Example: ["Risk 1", "Risk 2"]
 
 DIFF:
 {state['diff']}
 """
     response = llm.invoke(prompt)
     try:
-        state["risks"] = eval(response.content)
-    except:
+        # Clean the response
+        content = response.content.strip()
+        if content.startswith("```"):
+            content = content.split("```")[1]
+            if content.startswith("json"):
+                content = content[4:]
+        content = content.strip()
+        
+        state["risks"] = json.loads(content)
+    except Exception as e:
+        print(f"Warning: Could not parse risks: {e}")
         state["risks"] = ["Unable to parse risks"]
     return state
 
@@ -456,15 +479,25 @@ DIFF:
 def test_node(state):
     prompt = f"""
 Check if logic changes exist without corresponding tests.
-Return a JSON array of issues.
+Return ONLY a valid JSON array of missing test descriptions.
+Example: ["Missing tests for user_api.py", "No tests for payment logic"]
 
 DIFF:
 {state['diff']}
 """
     response = llm.invoke(prompt)
     try:
-        state["missing_tests"] = eval(response.content)
-    except:
+        # Clean the response
+        content = response.content.strip()
+        if content.startswith("```"):
+            content = content.split("```")[1]
+            if content.startswith("json"):
+                content = content[4:]
+        content = content.strip()
+        
+        state["missing_tests"] = json.loads(content)
+    except Exception as e:
+        print(f"Warning: Could not parse test issues: {e}")
         state["missing_tests"] = ["Unable to parse test issues"]
     return state
 
@@ -473,10 +506,11 @@ def score_node(state):
     score = 100
 
     if state.get("risks"):
-        score -= 20
+        score -= 20 * len(state["risks"])
 
     if state.get("missing_tests"):
         score -= 30
 
-    state["score"] = score
+    # Make sure score doesn't go below 0
+    state["score"] = max(0, score)
     return state

@@ -69,35 +69,95 @@
 # if __name__ == "__main__":
 #     test_prguard()
 
-
-
 import os
 import subprocess
 import argparse
 from graph import build_graph
 
+
 def get_pr_diff():
+    """Get PR diff from git"""
     subprocess.run(
         ["git", "fetch", "origin", os.environ.get("GITHUB_BASE_REF", "main")],
         check=False
     )
 
-    diff = subprocess.check_output(
-        ["git", "diff", f"origin/{os.environ.get('GITHUB_BASE_REF', 'main')}"],
-        text=True
-    )
-    return diff
+    try:
+        diff = subprocess.check_output(
+            ["git", "diff", f"origin/{os.environ.get('GITHUB_BASE_REF', 'main')}"],
+            text=True,
+            encoding='utf-8',
+            errors='replace'
+        )
+        return diff
+    except subprocess.CalledProcessError:
+        return ""
 
 
-def get_commits():
-    commits = subprocess.check_output(
-        ["git", "log", "--oneline", "HEAD~5..HEAD"],
-        text=True
-    )
-    return commits
+def get_commits(n=5):
+    """Get recent commit messages"""
+    try:
+        return subprocess.check_output(
+            ["git", "log", "--oneline", f"-n{n}"],
+            text=True,
+            encoding='utf-8',
+            errors='replace'
+        )
+    except subprocess.CalledProcessError:
+        return ""
+
+
+# def test_with_mock_data():
+#     """Test PRGuard with mock PR data"""
+    
+#     print("\n" + "="*60)
+#     print("🧪 Testing PRGuard with Mock Data")
+#     print("="*60 + "\n")
+    
+#     state = {
+#         "diff": """
+# diff --git a/src/api/users.py b/src/api/users.py
+# index 1234567..abcdefg 100644
+# --- a/src/api/users.py
+# +++ b/src/api/users.py
+# @@ -10,8 +10,8 @@ class UserAPI:
+# -    def get_user(self, user_id):
+# -        return User.query.get(user_id)
+# +    def get_user(self, user_id, include_details=False):
+# +        return User.query.get(user_id)
+     
+# -    def delete_user(self, id):
+# -        User.query.filter_by(id=id).delete()
+# +    # Removed delete_user function
+#         """,
+#         "commits": """
+# abc123 fix stuff
+# def456 update code
+# ghi789 feat: add user details parameter
+#         """
+#     }
+
+#     graph = build_graph()
+#     result = graph.invoke(state)
+
+#     print("📝 SUMMARY:")
+#     print(result["summary"])
+#     print("\n⚠️ RISKS:")
+#     for risk in result.get("risks", []):
+#         print(f"  - {risk}")
+#     print("\n🧪 MISSING TESTS:")
+#     for test in result.get("missing_tests", []):
+#         print(f"  - {test}")
+#     print(f"\n📊 MERGE SCORE: {result['score']}/100")
+    
+#     if result["score"] >= 70:
+#         print("\n✅ PR Guard PASSED")
+#     else:
+#         print("\n❌ PR Guard FAILED")
 
 
 def main():
+    """Run PR Guard on actual git repository"""
     parser = argparse.ArgumentParser()
     parser.add_argument("--threshold", type=int, default=70)
     args = parser.parse_args()
@@ -124,4 +184,8 @@ def main():
 
 
 if __name__ == "__main__":
+    # Test with mock data
+    # test_with_mock_data()
+    
+    # Uncomment below when ready to use with real git
     main()
