@@ -8,4 +8,3 @@ pydantic
 requests
 rich
 langchain-groq
-PyGithub
