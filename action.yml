@@ -22,5 +22,5 @@ runs:
 
     - name: Run PR Guard
       run: |
-        python src/run.py --threshold=${{ inputs.threshold }}
+        python src/main.py --threshold=${{ inputs.threshold }}
       shell: bash

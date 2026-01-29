@@ -2,6 +2,8 @@ import os
 import subprocess
 import argparse
 from graph import build_graph
+from utils import format_pr_comment
+from gith.client import post_pr_comment, is_ci
 
 
 def get_pr_diff():
@@ -55,6 +57,13 @@ def main():
     print("\nRISKS:\n", result.get("risks"))
     print("\nMISSING TESTS:\n", result.get("missing_tests"))
     print("\nMERGE SCORE:", result["score"])
+
+    # Generate PR comment
+    markdown_comment = format_pr_comment(result, args.threshold)
+
+    # Post comment ONLY in GitHub Actions
+    if is_ci():
+        post_pr_comment(markdown_comment)
 
     if result["score"] < args.threshold:
         print("\n❌ PR Guard failed quality gate")
