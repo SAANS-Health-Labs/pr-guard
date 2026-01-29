@@ -1,0 +1,26 @@
+name: PR Guard
+description: AI-powered PR quality gate
+
+inputs:
+  threshold:
+    description: Minimum merge score
+    required: false
+    default: "70"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+      shell: bash
+
+    - name: Run PR Guard
+      run: |
+        python src/run.py --threshold=${{ inputs.threshold }}
+      shell: bash
