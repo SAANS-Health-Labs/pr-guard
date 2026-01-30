@@ -168,15 +168,18 @@ DIFF:
 
 def maintainability_node(state):
     prompt = f"""
-Analyze the code changes for adherence to common coding conventions:
-- Naming consistency
-- File organization
-- Function responsibility
-- Readability
+Analyze the code changes for maintainability risks.
 
-Do NOT report personal style preferences.
+Report issues when:
+- Function or variable names obscure intent
+- Boolean flags are used instead of explicit enums
+- Functions perform multiple responsibilities
+- Deeply nested conditionals reduce readability
+- Misleading names contradict behavior
 
-Return ONLY a valid JSON array of findings.
+These are maintainability risks, not personal style.
+
+Return ONLY a valid JSON array.
 If none, return [].
 
 DIFF:
