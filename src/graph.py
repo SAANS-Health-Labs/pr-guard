@@ -1,6 +1,6 @@
 from langgraph.graph import StateGraph, END
 from state import PRState
-from nodes import pr_metadata_node, summary_node, risk_analysis_node, test_coverage_node, static_quality_node, maintainability_node, scoring_node
+from nodes import pr_metadata_node, summary_node, risk_analysis_node, test_coverage_node, static_quality_node, scoring_node
 
 
 def build_graph():
