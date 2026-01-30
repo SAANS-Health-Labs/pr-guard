@@ -165,35 +165,6 @@ DIFF:
     return state
 
 
-
-def maintainability_node(state):
-    prompt = f"""
-Analyze the code changes for maintainability risks.
-
-Report issues when:
-- Function or variable names obscure intent
-- Boolean flags are used instead of explicit enums
-- Functions perform multiple responsibilities
-- Deeply nested conditionals reduce readability
-- Misleading names contradict behavior
-
-These are maintainability risks, not personal style.
-
-Return ONLY a valid JSON array.
-If none, return [].
-
-DIFF:
-{state['diff']}
-"""
-    response = llm.invoke(prompt)
-    try:
-        content = _clean_json(response.content)
-        state["convention_issues"] = json.loads(content)
-    except Exception as e:
-        print(f"Warning: Could not parse convention issues: {e}")
-        state["convention_issues"] = []
-    return state
-
 def scoring_node(state):
     score = 100
 

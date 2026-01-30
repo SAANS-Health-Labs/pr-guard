@@ -70,7 +70,6 @@ def main():
     print("\n🔐 RISKS:\n", result.get("risks"))
     print("\n🧪 MISSING TESTS:\n", result.get("missing_tests"))
     print("\n🧹 LINT ISSUES:\n", result.get("lint_issues"))
-    print("\n🧠 MAINTAINABILITY:\n", result.get("maintainability_issues"))
     print("\nMERGE SCORE:", result["score"])
 
     # Generate PR comment

@@ -12,7 +12,6 @@ def build_graph():
     workflow.add_node("risk_analysis", risk_analysis_node)
     workflow.add_node("test_coverage", test_coverage_node)
     workflow.add_node("static_quality", static_quality_node)
-    workflow.add_node("maintainability", maintainability_node)
     workflow.add_node("scoring", scoring_node)
     
     # Entry point
@@ -23,8 +22,7 @@ def build_graph():
     workflow.add_edge("summary", "risk_analysis")
     workflow.add_edge("risk_analysis", "test_coverage")
     workflow.add_edge("test_coverage", "static_quality")
-    workflow.add_edge("static_quality", "maintainability")
-    workflow.add_edge("maintainability", "scoring")
+    workflow.add_edge("static_quality", "scoring")
     workflow.add_edge("scoring", END)
     
     return workflow.compile()

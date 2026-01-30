@@ -26,7 +26,6 @@ class PRState(TypedDict, total=False):
     risks: RiskBreakdown
     missing_tests: List[str]
     lint_issues: List[str]
-    maintainability_issues: List[str]
 
     # ── Final evaluation
     score: int
