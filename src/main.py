@@ -37,6 +37,19 @@ def get_commits(n=5):
     except subprocess.CalledProcessError:
         return ""
 
+def get_pr_title():
+    """Get PR title from GitHub event payload (CI only)"""
+    event_path = os.environ.get("GITHUB_EVENT_PATH")
+    if not event_path or not os.path.exists(event_path):
+        return ""
+    try:
+        import json
+        with open(event_path) as f:
+            event = json.load(f)
+        return event.get("pull_request", {}).get("title", "")
+    except Exception:
+        return ""
+
 
 def main():
     """Run PR Guard on actual git repository"""
@@ -47,15 +60,17 @@ def main():
     state = {
         "diff": get_pr_diff(),
         "commits": get_commits(),
+        "pr_title": get_pr_title(),
     }
 
     graph = build_graph()
     result = graph.invoke(state)
 
     print("\n🤖 PR GUARD REPORT\n")
-    print("SUMMARY:\n", result["summary"])
-    print("\nRISKS:\n", result.get("risks"))
-    print("\nMISSING TESTS:\n", result.get("missing_tests"))
+    print("\n🔐 RISKS:\n", result.get("risks"))
+    print("\n🧪 MISSING TESTS:\n", result.get("missing_tests"))
+    print("\n🧹 LINT ISSUES:\n", result.get("lint_issues"))
+    print("\n🧠 MAINTAINABILITY:\n", result.get("maintainability_issues"))
     print("\nMERGE SCORE:", result["score"])
 
     # Generate PR comment
