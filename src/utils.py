@@ -57,11 +57,6 @@ def format_pr_comment(result, threshold):
 
 ---
 
-### 🧠 Maintainability
-{render_bullets(maintainability_issues)}
-
----
-
 _🤖 This review was generated automatically by **PR Guard**_
 """
 
