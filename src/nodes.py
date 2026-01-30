@@ -45,17 +45,27 @@ PR TITLE:
 # Summarization node
 def summary_node(state):
     prompt = f"""
-Summarize this pull request in 4 bullet points.
-Focus on intent and impact.
+You are summarizing an entire GitHub pull request.
 
-DIFF:
+Generate EXACTLY 4 bullet points that:
+- Cover ALL meaningful changes across ALL files
+- Group related changes into high-level themes
+- Focus on intent, behavior change, and impact
+- Do NOT list file-by-file changes
+- Do NOT focus on a single file unless it dominates the PR
+
+Think globally about what this PR does.
+
+DIFF (all files combined):
 {state['diff']}
 
 COMMITS:
 {state['commits']}
+
+Return ONLY 4 concise bullet points.
 """
     response = llm.invoke(prompt)
-    state["summary"] = response.content
+    state["summary"] = response.content.strip()
     return state
 
 
